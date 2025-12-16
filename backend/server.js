@@ -29,12 +29,12 @@ app.get('/api/demo', (req, res) => {
 
     res.json({
         git: {
-            title: 'Advanced Git Workflow',
-            detail: 'ใช้ branch protection บน GitHub, code review ใน PR, และ squash merge เพื่อ history สะอาด'
+            title: '6604101304 ก้องภพ มูลวงค์',
+            detail: '6604101304 ก้องภพ มูลวงค์'
         },
         docker: {
-            title: 'Advanced Docker',
-            detail: 'ใช้ multi-stage build, healthcheck ใน Dockerfile, และ orchestration ด้วย Compose/Swarm'
+            title: '6604101304 ก้องภพ มูลวงค์',
+            detail: '6604101304 ก้องภพ มูลวงค์'
         }
     });
 });
