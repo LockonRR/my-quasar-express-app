@@ -12,7 +12,7 @@ import taskRoutes from './routes/task.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9000;
 
 app.use(cors());
 app.use(helmet());
@@ -26,23 +26,6 @@ if (!fs.existsSync(logsDir)) {
 }
 
 // (optional) endpoint เดิมจาก Lab 1.2 ถ้าอยากเก็บไว้ demo logging
-app.get('/api/demo', (req, res) => {
-  const logMessage = `Request at ${new Date().toISOString()}: ${req.ip}\n`;
-  fs.appendFileSync(path.join(logsDir, 'access.log'), logMessage);
-
-  res.json({
-    git: {
-      title: 'Advanced Git Workflow',
-      detail:
-        'ใช้ branch protection บน GitHub, code review ใน PR, และ squash merge เพื่อ history สะอาด',
-    },
-    docker: {
-      title: 'Advanced Docker',
-      detail:
-        'ใช้ multi-stage build, healthcheck ใน Dockerfile, และ orchestration ด้วย Compose/Swarm',
-    },
-  });
-});
 
 // Health check root
 app.get('/', (_req, res) => {

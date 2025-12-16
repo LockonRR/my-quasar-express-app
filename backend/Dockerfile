@@ -1,20 +1,38 @@
-# Use Node.js 18 Alpine as base image
-FROM node:18-alpine
+# Stage 1: Builder
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package.json package-lock.json ./
+# Copy package files -> Install dependencies
+COPY package*.json ./
+RUN npm ci
 
-# Install production dependencies
-RUN npm install --production
-
-# Copy application source code
+# Copy Source -> Build TypeScript & Generate Prisma
 COPY . .
+# Set dummy DATABASE_URL for build time (needed for prisma generate)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+RUN npx prisma generate
+RUN npm run build
 
-# Expose port 3000
+# Stage 2: Production
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy built assets from builder
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:3000/ || exit 1
+
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "server.js"]
+# Start application
+CMD ["node", "dist/server.js"]
